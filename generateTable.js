@@ -140,9 +140,12 @@ function generateTable(data) {
     // // Execute the SQL script
   }
   if (data.businessQuestions === "Add an employee") {
-    console.log("Add an employee");
-    connection.query("SELECT * FROM Role", (error, results, fields) => {
+    // console.log("Add an employee");
+    const sqlQuery = "SELECT * FROM Role";
+    connection.query(sqlQuery, (error, results, fields) => {
       // console.log(results);
+      // console.log(results[0]);
+      // console.log(results[1]);
       if (error) {
         console.error("Error executing query:", error);
         return;
@@ -150,6 +153,21 @@ function generateTable(data) {
       // console.log('Query results:', results);
       const rolesArray = results.map((obj) => obj.title);
       // console.log(rolesArray);
+      const getEmployeesSql = "SELECT * FROM Employees;";
+      // connection.query(getEmployeesSql, (error, results, fields) => {
+      //   if (error) {
+      //     console.error("Error executing multiple queries:", error);
+      //   } else {
+      //     const managerArray = results.map((obj) => obj.id);
+      //     // console.log(managerArray);
+      //     const target = answers.managerList;
+      //     const foundManager = results.find(
+      //       (employee) => employee.firstName === targetName
+      //     );
+      //     // Handle the results of the first query
+      //     console.log("Results of first query:", results);
+      //   }
+      // });
       const questions = [
         {
           type: "input",
@@ -168,6 +186,13 @@ function generateTable(data) {
           choices: rolesArray,
           default: rolesArray[0],
         },
+        // {
+        //   type: "list",
+        //   name: "managerList",
+        //   message: "What is the employee's manager?",
+        //   choices: managerArray,
+        //   default: managerArray[0],
+        // },
       ];
       inquirer.prompt(questions).then((answers) => {
         // console.log(answers);
@@ -175,6 +200,7 @@ function generateTable(data) {
         const targetName = answers.rolesList;
         const foundRole = results.find((role) => role.title === targetName);
         // console.log(foundRole);
+
         connection.query(
           `INSERT INTO Employees (first_name, last_name, role_id, manager_id) VALUES ('${answers.firstName}', '${answers.lastName}', ${foundRole.id}, 2);`,
           (error, results, fields) => {
